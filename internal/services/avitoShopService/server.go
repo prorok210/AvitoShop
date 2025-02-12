@@ -6,9 +6,11 @@ import (
 	"os"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/prorok210/AvitoShop/config"
 	h "github.com/prorok210/AvitoShop/internal/handlers"
 	"github.com/prorok210/AvitoShop/internal/middlewares"
+	echoSwagger "github.com/swaggo/echo-swagger"
 )
 
 func StartServer() {
@@ -20,6 +22,17 @@ func StartServer() {
 
 	e.GET("/api/buy/:item", h.Buy, middlewares.AuthMiddleware())
 	e.POST("api/sendCoin", h.SendCoin, middlewares.AuthMiddleware())
+	e.GET("api/info", h.GetInfo, middlewares.AuthMiddleware())
+
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType,
+			echo.HeaderAccept, echo.HeaderAuthorization},
+	}))
+
+	e.Static("/docs", "docs")
+	wrapHandler := echoSwagger.EchoWrapHandler(echoSwagger.URL("http://localhost:8083/docs/swagger.json"))
+	e.GET("/swagger/*", wrapHandler)
 
 	if err := e.Start(os.Getenv("SERVER_PORT")); err != http.ErrServerClosed {
 		log.Fatal(err)

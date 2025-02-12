@@ -10,6 +10,19 @@ import (
 	"github.com/prorok210/AvitoShop/internal/db"
 )
 
+// Buy godoc
+// @Summary Купить предмет за монеты.
+// @Description Покупка предмета за монеты: списывается стоимость предмета с баланса пользователя и создается заказ.
+// @Tags Merch
+// @Security BearerAuth
+// @Produce application/json
+// @Param item path string true "Название предмета"
+// @Success 200 {object} models.SuccessResponse "Успешный запрос"
+// @Failure 400 {object} models.Error400Response "Неверный запрос."
+// @Failure 401 {object} models.Error401Response "Неавторизован."
+// @Failure 404 {object} models.Error404Response "Предмет не найден."
+// @Failure 500 {object} models.Error500Response "Внутренняя ошибка сервера."
+// @Router /buy/{item} [get]
 func Buy(c echo.Context) error {
 	item := c.Param("item")
 

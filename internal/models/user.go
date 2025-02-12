@@ -32,7 +32,8 @@ type Order struct {
 
 type Transaction struct {
 	Model
-	UserID      int
-	Amount      int
-	RecipientID int
+	UserID   int
+	ToUserID int
+	ToUser   string `json:"toUser"`
+	Amount   int    `json:"amount"`
 }

@@ -8,15 +8,24 @@ import (
 	"github.com/jackc/pgx"
 	"github.com/labstack/echo/v4"
 	"github.com/prorok210/AvitoShop/internal/db"
+	"github.com/prorok210/AvitoShop/internal/models"
 )
 
-type request struct {
-	ToUser string `json:"toUser"`
-	Amount int    `json:"amount"`
-}
-
+// SendCoin godoc
+// @Summary Отправить монеты другому пользователю.
+// @Description Перевод монет от одного пользователя к другому.
+// @Tags Transactions
+// @Security BearerAuth
+// @Accept application/json
+// @Produce application/json
+// @Param body body models.TransactionRequest true "SendCoinRequest"
+// @Success 200 {object} models.SuccessResponse "Успешный запрос"
+// @Failure 400 {object} models.Error400Response "Неверный запрос"
+// @Failure 401 {object} models.Error401Response "Неавторизован"
+// @Failure 500 {object} models.Error500Response "Внутренняя ошибка сервера"
+// @Router /sendCoin [post]
 func SendCoin(c echo.Context) error {
-	req := new(request)
+	req := new(models.Transaction)
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
 	}
