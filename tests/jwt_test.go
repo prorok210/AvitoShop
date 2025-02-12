@@ -14,13 +14,11 @@ func TestJWTFunctions(t *testing.T) {
 	testCases := []struct {
 		name        string
 		username    string
-		email       string
 		expectedErr error
 		testFunc    func() error
 	}{
 		{
 			name:        "Generate Secret Key",
-			email:       "",
 			username:    "",
 			expectedErr: nil,
 			testFunc: func() error {
@@ -33,31 +31,28 @@ func TestJWTFunctions(t *testing.T) {
 		},
 		{
 			name:        "Generate Access Token",
-			email:       "test@example.com",
 			username:    "testuser",
 			expectedErr: nil,
 			testFunc: func() error {
-				_, err := utils.GenerateAccessToken("testuser", "test@example.com")
+				_, err := utils.GenerateAccessToken("testuser")
 				return err
 			},
 		},
 		{
 			name:        "Generate Refresh Token",
-			email:       "test@example.com",
 			username:    "testuser",
 			expectedErr: nil,
 			testFunc: func() error {
-				_, err := utils.GenerateRefreshToken("testuser", "test@example.com")
+				_, err := utils.GenerateRefreshToken("testuser")
 				return err
 			},
 		},
 		{
 			name:        "Validate Access Token",
 			username:    "testuser",
-			email:       "test@example.com",
 			expectedErr: nil,
 			testFunc: func() error {
-				token, err := utils.GenerateAccessToken("testuser", "test@example.com")
+				token, err := utils.GenerateAccessToken("testuser")
 				if err != nil {
 					return err
 				}
@@ -68,7 +63,6 @@ func TestJWTFunctions(t *testing.T) {
 		{
 			name:        "Invalid Access Token",
 			username:    "",
-			email:       "",
 			expectedErr: errors.New("error expected"),
 			testFunc: func() error {
 				_, err := utils.ValidateToken("invalidToken")
@@ -78,10 +72,9 @@ func TestJWTFunctions(t *testing.T) {
 		{
 			name:        "Refresh Tokens",
 			username:    "testuser",
-			email:       "test@example.com",
 			expectedErr: nil,
 			testFunc: func() error {
-				refreshToken, err := utils.GenerateRefreshToken("testuser", "test@example.com")
+				refreshToken, err := utils.GenerateRefreshToken("testuser")
 				if err != nil {
 					return err
 				}
@@ -92,11 +85,10 @@ func TestJWTFunctions(t *testing.T) {
 		{
 			name:        "Expired Access Token",
 			username:    "testuser",
-			email:       "test@example.com",
 			expectedErr: errors.New("error expected"),
 			testFunc: func() error {
 				config.JWT_ACCESS_EXPIRATION_TIME = time.Millisecond * 100
-				token, err := utils.GenerateAccessToken("testuser", "test@example.com")
+				token, err := utils.GenerateAccessToken("testuser")
 				if err != nil {
 					return err
 				}
@@ -109,20 +101,9 @@ func TestJWTFunctions(t *testing.T) {
 		{
 			name:        "Generate Access Token with Empty Username",
 			username:    "",
-			email:       "test@example.com",
 			expectedErr: errors.New("username is empty"),
 			testFunc: func() error {
-				_, err := utils.GenerateAccessToken("", "test@example.com")
-				return err
-			},
-		},
-		{
-			name:        "Generate Refresh Token with Empty Email",
-			username:    "testuser",
-			email:       "",
-			expectedErr: errors.New("email is empty"),
-			testFunc: func() error {
-				_, err := utils.GenerateRefreshToken("testuser", "")
+				_, err := utils.GenerateAccessToken("")
 				return err
 			},
 		},

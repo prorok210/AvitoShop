@@ -22,13 +22,12 @@ func GenerateSecretKey(length int) (string, error) {
 	return base64.URLEncoding.EncodeToString(key), nil
 }
 
-func GenerateAccessToken(username string, email string) (string, error) {
-	if username == "" || email == "" {
+func GenerateAccessToken(username string) (string, error) {
+	if username == "" {
 		return "", errors.New("Username or email is empty")
 	}
 	claims := jwt.MapClaims{
-		"username":   username,
-		"email":      email,
+		"name":       username,
 		"exp":        time.Now().Add(config.JWT_ACCESS_EXPIRATION_TIME).Unix(),
 		"token_type": "access",
 	}
@@ -37,13 +36,12 @@ func GenerateAccessToken(username string, email string) (string, error) {
 	return token.SignedString([]byte(os.Getenv("JWT_ACCESS_SECRET")))
 }
 
-func GenerateRefreshToken(username string, email string) (string, error) {
-	if username == "" || email == "" {
+func GenerateRefreshToken(username string) (string, error) {
+	if username == "" {
 		return "", errors.New("Username or email is empty")
 	}
 	claims := jwt.MapClaims{
-		"username":   username,
-		"email":      email,
+		"name":       username,
 		"exp":        time.Now().Add(config.JWT_REFRESH_EXPIRATION_TIME).Unix(),
 		"token_type": "refresh",
 	}
@@ -91,18 +89,17 @@ func RefreshTokens(refreshTokenString string) (string, string, error) {
 	if !ok || claims["token_type"] != "refresh" {
 		return "", "", errors.New("Invalid token type")
 	}
-	username, usernameOk := claims["username"].(string)
-	email, emailOk := claims["email"].(string)
-	if !usernameOk || !emailOk {
-		return "", "", errors.New("Invalid username or email in token claims")
+	username, usernameOk := claims["name"].(string)
+	if !usernameOk {
+		return "", "", errors.New("Invalid username in token claims")
 	}
 
-	newAccessToken, err := GenerateAccessToken(username, email)
+	newAccessToken, err := GenerateAccessToken(username)
 	if err != nil {
 		return "", "", err
 	}
 
-	newRefreshToken, err := GenerateRefreshToken(username, email)
+	newRefreshToken, err := GenerateRefreshToken(username)
 	if err != nil {
 		return "", "", err
 	}

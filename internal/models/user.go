@@ -13,7 +13,6 @@ type Model struct {
 type User struct {
 	Model
 	Name     string `json:"name"`
-	Email    string `json:"email"`
 	Password string `json:"password,omitempty"`
 	Balance  int    `json:"balance,omitempty"`
 }
@@ -23,4 +22,17 @@ type Tokens struct {
 	UserID       int
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`
+}
+
+type Order struct {
+	Model
+	UserID  int
+	MerchID int
+}
+
+type Transaction struct {
+	Model
+	UserID      int
+	Amount      int
+	RecipientID int
 }
