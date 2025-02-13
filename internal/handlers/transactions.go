@@ -22,39 +22,40 @@ import (
 // @Success 200 {object} models.SuccessResponse "Успешный запрос"
 // @Failure 400 {object} models.Error400Response "Неверный запрос"
 // @Failure 401 {object} models.Error401Response "Неавторизован"
+// @Failure 404 {object} models.Error404Response "Не найдено"
 // @Failure 500 {object} models.Error500Response "Внутренняя ошибка сервера"
 // @Router /sendCoin [post]
 func SendCoin(c echo.Context) error {
 	req := new(models.Transaction)
 	if err := c.Bind(req); err != nil {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
+		return c.JSON(http.StatusBadRequest, models.Error400Response{Error: "Неверный запрос"})
 	}
 
 	if req.ToUser == "" || req.Amount <= 0 {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request"})
+		return c.JSON(http.StatusBadRequest, models.Error400Response{Error: "Неверный запрос"})
 	}
 
 	fromUser := c.Get("userID").(int)
 	balance := c.Get("Balance").(int)
 	if balance < req.Amount {
-		return c.JSON(http.StatusForbidden, map[string]string{"error": "Not enough money"})
+		return c.JSON(http.StatusBadRequest, models.Error400Response{Error: "Недостаточно средств"})
 	}
 
 	var toUserID int
 	err := db.DBConn.QueryRow(context.Background(),
 		"SELECT user_id FROM users WHERE name = $1", req.ToUser).Scan(&toUserID)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Recipient not found"})
+		return c.JSON(http.StatusNotFound, models.Error404Response{Error: "Получатель не найден"})
 	} else if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Database error"})
+		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Ошибка запроса к базе данных"})
 	}
 	if toUserID == fromUser {
-		return c.JSON(http.StatusBadRequest, map[string]string{"error": "You can't send coins to yourself"})
+		return c.JSON(http.StatusBadRequest, models.Error400Response{Error: "Вы не можете отправлять монеты самому себе"})
 	}
 
 	tx, err := db.DBConn.Begin(context.Background())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to start transaction"})
+		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Ошибка начала транзакции"})
 	}
 	defer tx.Rollback(context.Background())
 
@@ -62,26 +63,26 @@ func SendCoin(c echo.Context) error {
 		"UPDATE users SET balance = balance - $1 WHERE user_id = $2",
 		req.Amount, fromUser)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update sender's balance"})
+		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Не удалось обновить баланс"})
 	}
 
 	_, err = tx.Exec(context.Background(),
 		"UPDATE users SET balance = balance + $1 WHERE user_id = $2",
 		req.Amount, toUserID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update recipient's balance"})
+		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Не удалось обновить баланс"})
 	}
 
 	_, err = tx.Exec(context.Background(),
 		"INSERT INTO transactions (user_id, recipient_id, amount_coins) VALUES ($1, $2, $3)",
 		fromUser, toUserID, req.Amount)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to insert transaction record"})
+		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Не удалось создать транзакцию"})
 	}
 
 	if err = tx.Commit(context.Background()); err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to commit transaction"})
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Не удалось завершить транзакцию"})
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"message": "Coins transferred successfully"})
+	return c.JSON(http.StatusOK, models.SuccessResponse{Message: "Транзакция успешно завершена"})
 }

@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx"
 	"github.com/labstack/echo/v4"
 	"github.com/prorok210/AvitoShop/internal/db"
+	"github.com/prorok210/AvitoShop/internal/models"
 )
 
 // Buy godoc
@@ -32,20 +33,20 @@ func Buy(c echo.Context) error {
 	if err != nil {
 		fmt.Println(err.Error())
 		if err.Error() == pgx.ErrNoRows.Error() {
-			return c.JSON(http.StatusNotFound, map[string]string{"error": "Item not found"})
+			return c.JSON(http.StatusNotFound, models.Error404Response{Error: "Предмет не найден"})
 		}
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Database error"})
+		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Ошибка базы данных"})
 	}
 
 	balance := c.Get("Balance").(int)
 	if balance < price {
-		return c.JSON(http.StatusForbidden, map[string]string{"error": "Not enough money"})
+		return c.JSON(http.StatusBadRequest, models.Error400Response{Error: "Недостаточно средств"})
 	}
 
 	userID := c.Get("userID").(int)
 	tx, err := db.DBConn.Begin(context.Background())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to start transaction"})
+		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Ошибка начала транзакции"})
 	}
 
 	defer tx.Rollback(context.Background())
@@ -53,19 +54,19 @@ func Buy(c echo.Context) error {
 	_, err = tx.Exec(context.Background(),
 		"UPDATE users SET balance = balance - $1 WHERE user_id = $2", price, userID)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to update balance"})
+		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Не удалось обновить баланс"})
 	}
 
 	_, err = tx.Exec(context.Background(),
 		"INSERT INTO orders (user_id, merch_id) VALUES ($1, $2)", userID, merch_id)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to insert order"})
+		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Не удалось создать заказ"})
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to commit transaction"})
+		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Не удалось завершить транзакцию"})
 	}
 
-	return c.JSON(http.StatusOK, map[string]string{"message": "Purchase successful"})
+	return c.JSON(http.StatusOK, models.SuccessResponse{Message: "Покупка успешно совершена"})
 }

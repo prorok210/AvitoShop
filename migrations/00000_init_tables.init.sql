@@ -19,7 +19,6 @@ CREATE TABLE IF NOT EXISTS tokens(
     token_id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
     access_token VARCHAR(255) NOT NULL,
-    refresh_token VARCHAR(255) NOT NULL,
     createdAt TIMESTAMP DEFAULT NOW() NOT NULL,
     updatedAt TIMESTAMP NOT NULL DEFAULT NOW()
 );

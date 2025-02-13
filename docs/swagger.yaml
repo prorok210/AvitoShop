@@ -2,21 +2,19 @@ basePath: /api
 definitions:
   models.AuthRequest:
     properties:
-      name:
-        example: username
-        type: string
       password:
         example: secret123
         type: string
+      username:
+        example: username
+        type: string
     required:
-    - name
     - password
+    - username
     type: object
   models.AuthResponse:
     properties:
-      access_token:
-        type: string
-      refresh_token:
+      token:
         type: string
     type: object
   models.CoinHistory:
@@ -123,7 +121,7 @@ paths:
       consumes:
       - application/json
       description: Аутентификация с помощью имени пользователя и пароля и возвращение
-        access и refresh токенов.
+        токена.
       parameters:
       - description: Auth credentials
         in: body
@@ -245,6 +243,10 @@ paths:
           description: Неавторизован
           schema:
             $ref: '#/definitions/models.Error401Response'
+        "404":
+          description: Не найдено
+          schema:
+            $ref: '#/definitions/models.Error404Response'
         "500":
           description: Внутренняя ошибка сервера
           schema:

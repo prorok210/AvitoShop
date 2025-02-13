@@ -21,8 +21,7 @@ type SuccessResponse struct {
 }
 
 type AuthResponse struct {
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+	Token string `json:"token"`
 }
 
 type InfoResponse struct {

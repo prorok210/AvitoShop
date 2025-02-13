@@ -23,9 +23,7 @@ func TestJWTFunctions(t *testing.T) {
 			expectedErr: nil,
 			testFunc: func() error {
 				accKey, err := utils.GenerateSecretKey(32)
-				refKey, err := utils.GenerateSecretKey(32)
 				t.Setenv("JWT_ACCESS_SECRET", accKey)
-				t.Setenv("JWT_REFRESH_SECRET", refKey)
 				return err
 			},
 		},
@@ -35,15 +33,6 @@ func TestJWTFunctions(t *testing.T) {
 			expectedErr: nil,
 			testFunc: func() error {
 				_, err := utils.GenerateAccessToken("testuser")
-				return err
-			},
-		},
-		{
-			name:        "Generate Refresh Token",
-			username:    "testuser",
-			expectedErr: nil,
-			testFunc: func() error {
-				_, err := utils.GenerateRefreshToken("testuser")
 				return err
 			},
 		},
@@ -66,19 +55,6 @@ func TestJWTFunctions(t *testing.T) {
 			expectedErr: errors.New("error expected"),
 			testFunc: func() error {
 				_, err := utils.ValidateToken("invalidToken")
-				return err
-			},
-		},
-		{
-			name:        "Refresh Tokens",
-			username:    "testuser",
-			expectedErr: nil,
-			testFunc: func() error {
-				refreshToken, err := utils.GenerateRefreshToken("testuser")
-				if err != nil {
-					return err
-				}
-				_, _, err = utils.RefreshTokens(refreshToken)
 				return err
 			},
 		},

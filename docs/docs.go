@@ -17,7 +17,7 @@ const docTemplate = `{
     "paths": {
         "/auth": {
             "post": {
-                "description": "Аутентификация с помощью имени пользователя и пароля и возвращение access и refresh токенов.",
+                "description": "Аутентификация с помощью имени пользователя и пароля и возвращение токена.",
                 "consumes": [
                     "application/json"
                 ],
@@ -215,6 +215,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.Error401Response"
                         }
                     },
+                    "404": {
+                        "description": "Не найдено",
+                        "schema": {
+                            "$ref": "#/definitions/models.Error404Response"
+                        }
+                    },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
@@ -229,27 +235,24 @@ const docTemplate = `{
         "models.AuthRequest": {
             "type": "object",
             "required": [
-                "name",
-                "password"
+                "password",
+                "username"
             ],
             "properties": {
-                "name": {
-                    "type": "string",
-                    "example": "username"
-                },
                 "password": {
                     "type": "string",
                     "example": "secret123"
+                },
+                "username": {
+                    "type": "string",
+                    "example": "username"
                 }
             }
         },
         "models.AuthResponse": {
             "type": "object",
             "properties": {
-                "access_token": {
-                    "type": "string"
-                },
-                "refresh_token": {
+                "token": {
                     "type": "string"
                 }
             }

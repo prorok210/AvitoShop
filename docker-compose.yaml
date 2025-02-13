@@ -13,7 +13,6 @@ services:
       - DATABASE_NAME=shop
       - DATABASE_HOST=db
       - JWT_ACCESS_SECRET=mGZSyg__1EeXfuj1V0S-HyT9Nn3eSbPmS2NUpMABOsA=
-      - JWT_REFRESH_SECRET=7im5FYNU5uprtXmiL4mWy_WVvil3eOpQI-PKhbYy1-U=
 
       - SERVER_PORT=0.0.0.0:8083
     depends_on:

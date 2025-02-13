@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/labstack/echo/v4"
 	"github.com/prorok210/AvitoShop/internal/db"
+	"github.com/prorok210/AvitoShop/internal/models"
 	"github.com/prorok210/AvitoShop/internal/utils"
 )
 
@@ -17,23 +18,23 @@ func AuthMiddleware() echo.MiddlewareFunc {
 		return func(c echo.Context) error {
 			authHeader := c.Request().Header.Get("Authorization")
 			if authHeader == "" {
-				return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Missing Authorization header"})
+				return c.JSON(http.StatusUnauthorized, models.Error401Response{Error: "Не найден заголовок Authorization"})
 			}
 
 			parts := strings.Split(authHeader, " ")
 			if len(parts) != 2 || parts[0] != "Bearer" {
-				return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token format"})
+				return c.JSON(http.StatusUnauthorized, models.Error401Response{Error: "Неверный формат токена"})
 			}
 
 			token := parts[1]
 			claims, err := utils.ValidateToken(token)
 			if err != nil {
-				return c.JSON(http.StatusUnauthorized, map[string]string{"error": err.Error()})
+				return c.JSON(http.StatusUnauthorized, models.Error401Response{Error: "Невалидный токен"})
 			}
 
 			name, ok := claims["name"].(string)
 			if !ok {
-				return c.JSON(http.StatusUnauthorized, map[string]string{"error": "Invalid token"})
+				return c.JSON(http.StatusUnauthorized, models.Error401Response{Error: "Невалидный токен"})
 			}
 
 			var userID, balance int
@@ -41,10 +42,9 @@ func AuthMiddleware() echo.MiddlewareFunc {
 				"SELECT user_id, balance FROM users WHERE name = $1", name).
 				Scan(&userID, &balance)
 			if errors.Is(err, pgx.ErrNoRows) {
-				return c.JSON(http.StatusUnauthorized, map[string]string{"error": "User not found"})
+				return c.JSON(http.StatusUnauthorized, models.Error401Response{Error: "Пользователь не найден"})
 			} else if err != nil {
-
-				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Database error"})
+				return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Ошибка базы данных"})
 			}
 
 			c.Set("userID", userID)

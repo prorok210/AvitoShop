@@ -12,16 +12,15 @@ type Model struct {
 
 type User struct {
 	Model
-	Name     string `json:"name"`
+	Name     string `json:"username"`
 	Password string `json:"password,omitempty"`
 	Balance  int    `json:"balance,omitempty"`
 }
 
 type Tokens struct {
 	Model
-	UserID       int
-	AccessToken  string `json:"access_token"`
-	RefreshToken string `json:"refresh_token"`
+	UserID      int
+	AccessToken string `json:"token"`
 }
 
 type Order struct {
