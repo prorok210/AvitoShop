@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	"github.com/jackc/pgx"
@@ -44,10 +43,12 @@ func SendCoin(c echo.Context) error {
 	var toUserID int
 	err := db.DBConn.QueryRow(context.Background(),
 		"SELECT user_id FROM users WHERE name = $1", req.ToUser).Scan(&toUserID)
-	if errors.Is(err, pgx.ErrNoRows) {
-		return c.JSON(http.StatusNotFound, models.Error404Response{Error: "Получатель не найден"})
-	} else if err != nil {
+	if err != nil {
+		if err.Error() == pgx.ErrNoRows.Error() {
+			return c.JSON(http.StatusNotFound, models.Error404Response{Error: "Получатель не найден"})
+		}
 		return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Ошибка запроса к базе данных"})
+
 	}
 	if toUserID == fromUser {
 		return c.JSON(http.StatusBadRequest, models.Error400Response{Error: "Вы не можете отправлять монеты самому себе"})

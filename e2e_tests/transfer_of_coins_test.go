@@ -222,6 +222,16 @@ func Test_TransferInsufficientFunds(t *testing.T) {
 	e.ServeHTTP(transferRec1, transferReq)
 	assert.Equal(t, http.StatusBadRequest, transferRec1.Code)
 
+	// Перевод не существующему пользователю
+	transferReq = httptest.NewRequest(http.MethodPost, "/api/sendCoin",
+		bytes.NewBufferString(fmt.Sprintf(`{"toUser": "%s", "amount": 100}`, "Gus Fring")))
+	transferReq.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+	transferReq.Header.Set("Authorization", "Bearer "+token1)
+	transferRec1 = httptest.NewRecorder()
+
+	e.ServeHTTP(transferRec1, transferReq)
+	assert.Equal(t, http.StatusNotFound, transferRec1.Code)
+
 	// Перевод монет без токена
 	transferReq = httptest.NewRequest(http.MethodPost, "/api/sendCoin",
 		bytes.NewBufferString(fmt.Sprintf(`{"toUser": "%s", "amount": 100}`, u1.Name)))
