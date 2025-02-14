@@ -61,6 +61,36 @@ func (r *FakeMerchRowInt) Scan(dest ...interface{}) error {
 	return nil
 }
 
+type FakeInfoRows struct {
+	pgx.Rows
+	data  [][]interface{}
+	index int
+}
+
+func (r *FakeInfoRows) Next() bool {
+	return r.index < len(r.data)
+}
+
+func (r *FakeInfoRows) Scan(dest ...interface{}) error {
+	row := r.data[r.index]
+	r.index++
+	for i, d := range dest {
+		switch d := d.(type) {
+		case *string:
+			*d = row[i].(string)
+		case *int:
+			*d = row[i].(int)
+		}
+	}
+	return nil
+}
+
+func (r *FakeInfoRows) Close() {}
+
+func (r *FakeInfoRows) Err() error {
+	return nil
+}
+
 type Tx struct {
 	mock.Mock
 	pgx.Tx

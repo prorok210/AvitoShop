@@ -18,7 +18,7 @@ import (
 	"github.com/prorok210/AvitoShop/internal/models"
 )
 
-func TestSendCoin_Success(t *testing.T) {
+func Test_SendCoinSuccess(t *testing.T) {
 	e := echo.New()
 
 	reqBody, _ := json.Marshal(models.Transaction{
@@ -80,7 +80,7 @@ func TestSendCoin_Success(t *testing.T) {
 	}
 }
 
-func TestSendCoin_InsufficientFunds(t *testing.T) {
+func Test_SendCoinInsufficientFunds(t *testing.T) {
 	e := echo.New()
 
 	reqBody, _ := json.Marshal(models.Transaction{

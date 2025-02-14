@@ -1,4 +1,4 @@
-basePath: /api
+basePath: /
 definitions:
   models.AuthRequest:
     properties:
@@ -109,14 +109,14 @@ definitions:
     - amount
     - toUser
     type: object
-host: localhost:8083
+host: localhost:8080
 info:
   contact: {}
   description: API для отбора на стажировку в Авито
   title: API Avito shop
   version: 1.0.0
 paths:
-  /auth:
+  /api/auth:
     post:
       consumes:
       - application/json
@@ -150,7 +150,7 @@ paths:
       summary: Аутентификация и получение JWT-токена.
       tags:
       - User
-  /buy/{item}:
+  /api/buy/{item}:
     get:
       description: 'Покупка предмета за монеты: списывается стоимость предмета с баланса
         пользователя и создается заказ.'
@@ -188,7 +188,7 @@ paths:
       summary: Купить предмет за монеты.
       tags:
       - Merch
-  /info:
+  /api/info:
     get:
       description: Получение баланса, инвентаря и истории транзакций (отправленных
         и полученных монет) для авторизованного пользователя.
@@ -216,7 +216,7 @@ paths:
       summary: Получить информацию о монетах, инвентаре и истории транзакций.
       tags:
       - User
-  /sendCoin:
+  /api/sendCoin:
     post:
       consumes:
       - application/json

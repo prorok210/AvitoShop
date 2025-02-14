@@ -22,7 +22,7 @@ import (
 // @Failure 400 {object} models.Error400Response "Неверный запрос"
 // @Failure 401 {object} models.Error401Response "Неавторизован"
 // @Failure 500 {object} models.Error500Response "Внутренняя ошибка сервера"
-// @Router /auth [post]
+// @Router /api/auth [post]
 func Auth(c echo.Context) error {
 	u := new(models.User)
 	if err := c.Bind(u); err != nil {
@@ -100,7 +100,7 @@ func Auth(c echo.Context) error {
 // @Failure 400 {object} models.Error400Response "Неверный запрос"
 // @Failure 401 {object} models.Error401Response "Неавторизован"
 // @Failure 500 {object} models.Error500Response "Внутренняя ошибка сервера"
-// @Router /info [get]
+// @Router /api/info [get]
 func GetInfo(c echo.Context) error {
 	userID := c.Get("userID").(int)
 	balance := c.Get("Balance").(int)

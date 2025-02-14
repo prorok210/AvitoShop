@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestJWTFunctions(t *testing.T) {
+func Test_JWTFunctions(t *testing.T) {
 	testCases := []struct {
 		name        string
 		username    string

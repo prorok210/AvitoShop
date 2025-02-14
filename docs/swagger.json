@@ -6,10 +6,10 @@
         "contact": {},
         "version": "1.0.0"
     },
-    "host": "localhost:8083",
-    "basePath": "/api",
+    "host": "localhost:8080",
+    "basePath": "/",
     "paths": {
-        "/auth": {
+        "/api/auth": {
             "post": {
                 "description": "Аутентификация с помощью имени пользователя и пароля и возвращение токена.",
                 "consumes": [
@@ -60,7 +60,7 @@
                 }
             }
         },
-        "/buy/{item}": {
+        "/api/buy/{item}": {
             "get": {
                 "security": [
                     {
@@ -118,7 +118,7 @@
                 }
             }
         },
-        "/info": {
+        "/api/info": {
             "get": {
                 "security": [
                     {
@@ -161,7 +161,7 @@
                 }
             }
         },
-        "/sendCoin": {
+        "/api/sendCoin": {
             "post": {
                 "security": [
                     {

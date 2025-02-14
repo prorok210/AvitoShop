@@ -23,7 +23,7 @@ import (
 // @Failure 401 {object} models.Error401Response "Неавторизован."
 // @Failure 404 {object} models.Error404Response "Предмет не найден."
 // @Failure 500 {object} models.Error500Response "Внутренняя ошибка сервера."
-// @Router /buy/{item} [get]
+// @Router /api/buy/{item} [get]
 func Buy(c echo.Context) error {
 	item := c.Param("item")
 

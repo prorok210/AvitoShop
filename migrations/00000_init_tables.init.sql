@@ -60,11 +60,11 @@ CREATE TRIGGER update_merch_updatedAt
 BEFORE UPDATE ON merch
 FOR EACH ROW EXECUTE FUNCTION update_updatedAt_column();
 
-CREATE TRIGGER update_merch_updatedAt
+CREATE TRIGGER update_orders_updatedAt
 BEFORE UPDATE ON orders
 FOR EACH ROW EXECUTE FUNCTION update_updatedAt_column();
 
-CREATE TRIGGER update_merch_updatedAt
+CREATE TRIGGER update_transactions_updatedAt
 BEFORE UPDATE ON transactions
 FOR EACH ROW EXECUTE FUNCTION update_updatedAt_column();
 

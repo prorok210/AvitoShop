@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/auth": {
+        "/api/auth": {
             "post": {
                 "description": "Аутентификация с помощью имени пользователя и пароля и возвращение токена.",
                 "consumes": [
@@ -66,7 +66,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/buy/{item}": {
+        "/api/buy/{item}": {
             "get": {
                 "security": [
                     {
@@ -124,7 +124,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/info": {
+        "/api/info": {
             "get": {
                 "security": [
                     {
@@ -167,7 +167,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/sendCoin": {
+        "/api/sendCoin": {
             "post": {
                 "security": [
                     {
@@ -407,8 +407,8 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0.0",
-	Host:             "localhost:8083",
-	BasePath:         "/api",
+	Host:             "localhost:8080",
+	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "API Avito shop",
 	Description:      "API для отбора на стажировку в Авито",

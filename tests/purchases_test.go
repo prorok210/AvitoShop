@@ -15,7 +15,7 @@ import (
 	"github.com/prorok210/AvitoShop/internal/handlers"
 )
 
-func TestBuy_Success(t *testing.T) {
+func Test_BuySuccess(t *testing.T) {
 	e := echo.New()
 
 	req := httptest.NewRequest(http.MethodGet, "/api/buy/cup", nil)
@@ -67,7 +67,7 @@ func TestBuy_Success(t *testing.T) {
 	}
 }
 
-func TestBuy_InsufficientFunds(t *testing.T) {
+func Test_BuyInsufficientFunds(t *testing.T) {
 	e := echo.New()
 
 	req := httptest.NewRequest(http.MethodGet, "/api/buy/cup", nil)

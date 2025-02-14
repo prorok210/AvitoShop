@@ -31,7 +31,7 @@ func StartServer() {
 	}))
 
 	e.Static("/docs", "docs")
-	wrapHandler := echoSwagger.EchoWrapHandler(echoSwagger.URL("http://localhost:8083/docs/swagger.json"))
+	wrapHandler := echoSwagger.EchoWrapHandler(echoSwagger.URL("http://localhost:8080/docs/swagger.json"))
 	e.GET("/swagger/*", wrapHandler)
 
 	if err := e.Start(os.Getenv("SERVER_PORT")); err != http.ErrServerClosed {

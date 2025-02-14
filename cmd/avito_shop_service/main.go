@@ -8,10 +8,10 @@ import (
 // @title API Avito shop
 // @version 1.0.0
 // @description API для отбора на стажировку в Авито
-// @host localhost:8083
-// @BasePath /api
+// @host localhost:8080
+// @BasePath /
 
-// @host localhost:8083
+// @host localhost:8080
 
 // @securityDefinitions.apikey BearerAuth
 // @in header

@@ -24,7 +24,7 @@ import (
 // @Failure 401 {object} models.Error401Response "Неавторизован"
 // @Failure 404 {object} models.Error404Response "Не найдено"
 // @Failure 500 {object} models.Error500Response "Внутренняя ошибка сервера"
-// @Router /sendCoin [post]
+// @Router /api/sendCoin [post]
 func SendCoin(c echo.Context) error {
 	req := new(models.Transaction)
 	if err := c.Bind(req); err != nil {
