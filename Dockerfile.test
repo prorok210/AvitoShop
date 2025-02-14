@@ -1,0 +1,6 @@
+FROM golang:1.22
+
+WORKDIR ${GOPATH}/AvitoShop/
+COPY . ${GOPATH}/AvitoShop/
+
+CMD ["go", "test", "./e2e_tests/...", "-v"]

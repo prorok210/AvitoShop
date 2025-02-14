@@ -1,0 +1,95 @@
+version: "3.8"
+
+services:
+  avito-shop-service:
+    profiles: ["prod"]
+    logging:
+      driver: "none"
+    build: .
+    container_name: avito-shop-service
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=password
+      - DATABASE_NAME=shop
+      - DATABASE_HOST=db
+      - JWT_ACCESS_SECRET=mGZSyg__1EeXfuj1V0S-HyT9Nn3eSbPmS2NUpMABOsA=
+
+      - SERVER_PORT=0.0.0.0:8080
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - internal
+
+  db:
+    profiles: ["prod"]
+    logging:
+      driver: "none"
+    image: postgres:13
+    container_name: postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: shop
+    volumes:
+      - ./migrations/00000_init_tables.init.sql:/docker-entrypoint-initdb.d/00000_init_tables.init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d shop'"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - internal
+  test-db:
+    profiles: ["test"]
+    image: postgres:13
+    container_name: postgres-test
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: shop_test
+    volumes:
+      - ./migrations/00000_init_tables.init.sql:/docker-entrypoint-initdb.d/00000_init_tables.init.sql
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "sh -c 'pg_isready -U postgres -d shop_test'"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    networks:
+      - test-network
+  e2e-tests:
+    profiles: ["test"]
+    tty: true
+    stdin_open: true
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    ports:
+      - "8081:8081"
+    environment:
+      - DATABASE_HOST=test-db
+      - DATABASE_PORT=5432
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=password
+      - DATABASE_NAME=shop_test
+      - JWT_ACCESS_SECRET=mGZSyg__1EeXfuj1V0S-HyT9Nn3eSbPmS2NUpMABOsA=
+
+      - SERVER_PORT=0.0.0.0:8081
+    depends_on:
+      test-db:
+        condition: service_healthy
+    networks:
+      - test-network
+networks:
+  internal:
+  test-network:
+    name: test-network
