@@ -32,6 +32,10 @@ func AuthMiddleware() echo.MiddlewareFunc {
 				return c.JSON(http.StatusUnauthorized, models.Error401Response{Error: "Невалидный токен"})
 			}
 
+			if claims == nil {
+				return echo.NewHTTPError(http.StatusUnauthorized, "Невалидный токен")
+			}
+
 			name, ok := claims["name"].(string)
 			if !ok {
 				return c.JSON(http.StatusUnauthorized, models.Error401Response{Error: "Невалидный токен"})
@@ -41,9 +45,10 @@ func AuthMiddleware() echo.MiddlewareFunc {
 			err = db.DBConn.QueryRow(context.Background(),
 				"SELECT user_id, balance FROM users WHERE name = $1", name).
 				Scan(&userID, &balance)
-			if errors.Is(err, pgx.ErrNoRows) {
-				return c.JSON(http.StatusUnauthorized, models.Error401Response{Error: "Пользователь не найден"})
-			} else if err != nil {
+			if err != nil {
+				if errors.Is(err, pgx.ErrNoRows) {
+					return c.JSON(http.StatusUnauthorized, models.Error401Response{Error: "Пользователь не найден"})
+				}
 				return c.JSON(http.StatusInternalServerError, models.Error500Response{Error: "Ошибка базы данных"})
 			}
 
