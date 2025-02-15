@@ -1,7 +1,7 @@
 package models
 
 type Merch struct {
-	Model
+	ID    int
 	Name  string
 	Price int
 }
